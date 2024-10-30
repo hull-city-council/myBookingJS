@@ -28,45 +28,45 @@ const formatDate = new Intl.DateTimeFormat("gb", {
 // Get booking range
 const bookableStartDate =
   typeof document.querySelector("#startDateChar").value !== "undefined" &&
-  document.querySelector("#startDateChar").value !== null
+    document.querySelector("#startDateChar").value !== null
     ? document.querySelector("#startDateChar").value
     : formatDate.format(Date.now()).toString();
 const bookableEndDate =
   typeof document.querySelector("#endDateChar").value !== "undefined" &&
-  document.querySelector("#endDateChar").value !== null
+    document.querySelector("#endDateChar").value !== null
     ? document.querySelector("#endDateChar").value
     : formatDate
-        .format(new Date(new Date().setDate(new Date().getDate() + 30)))
-        .toString();
+      .format(new Date(new Date().setDate(new Date().getDate() + 30)))
+      .toString();
 // Get resource ID
 let resourceID =
   typeof document.querySelector("#resourceID").value !== "undefined" &&
-  document.querySelector("#resourceID").value !== null
+    document.querySelector("#resourceID").value !== null
     ? document.querySelector("#resourceID").value
     : 0;
 const dateSelected =
   typeof document.querySelector("#dateSelected").value !== "undefined" &&
-  document.querySelector("#dateSelected").value !== null
+    document.querySelector("#dateSelected").value !== null
     ? document.querySelector("#dateSelected").value
     : 0;
 const slotSelectedStartTime =
   typeof document.querySelector("#slotSelectedStartTime").value !== "undefined" &&
-  document.querySelector("#slotSelectedStartTime").value !== null
+    document.querySelector("#slotSelectedStartTime").value !== null
     ? document.querySelector("#slotSelectedStartTime").value
     : 0;
 const slotSelectedEndTime =
   typeof document.querySelector("#slotSelectedEndTime").value !== "undefined" &&
-  document.querySelector("#slotSelectedEndTime").value !== null
+    document.querySelector("#slotSelectedEndTime").value !== null
     ? document.querySelector("#slotSelectedEndTime").value
     : 0;
 const ucrn =
   typeof document.querySelector("#formData").value !== "undefined" &&
-  document.querySelector("#formData").value !== null
+    document.querySelector("#formData").value !== null
     ? JSON.parse(document.querySelector("#formData").value)[0].ucrn
     : 0;
 const caseRef =
   typeof JSON.parse(document.querySelector("#formData").value)[0].case_ref !== "undefined" &&
-  JSON.parse(document.querySelector("#formData").value)[0].case_ref !== null
+    JSON.parse(document.querySelector("#formData").value)[0].case_ref !== null
     ? JSON.parse(document.querySelector("#formData").value)[0].case_ref
     : 0;
 // Check if there is a previous stage
@@ -74,19 +74,28 @@ const previousTask =
   typeof parent.window.AF._iframe?.forms["fillform-frame-1"].data.task_data
     ?.previous_task_id !== "undefined"
     ? parent.window.AF._iframe.forms["fillform-frame-1"].data.task_data
-        .previous_task_id
+      .previous_task_id
     : null;
 
+function isValidOrigin() {
+  const allowedHosts = [
+    "achieveservice.com",
+    "hull.gov.uk"
+  ]
+  const url = new URL(window.origin);
+  return allowedHosts.some(allowedHost => url.hostname.endsWith(allowedHost)) || url.hostname === "main.d3g2arwbz0lun5.amplifyapp.com";
+}
+
+if (isValidOrigin()) {
+
   // Set the script as ready
-    //TODO
-    // if (e.origin !== 'http://the-trusted-iframe-origin.com') return;
-    iframe.contentWindow.postMessage({
-      isReady: true,
-      }, "*");
+  iframe.contentWindow.postMessage({
+    isReady: true,
+  }, "*");
 
   const resourceIDInput = document.querySelector("#resourceID");
 
-  resourceIDInput.addEventListener("change", function() {
+  resourceIDInput.addEventListener("change", function () {
     resourceID = resourceIDInput.value;
     setTimeout(() => {
       console.log("detected resource id change");
@@ -94,7 +103,7 @@ const previousTask =
       iframe = document.querySelector("#iframe");
       getAvailability(bookableStartDate, bookableEndDate, resourceID);
     }, 5000);
-  
+
   });
 
   // Get the resource availability for the date range
@@ -137,9 +146,6 @@ const previousTask =
           bookableSlots !== null &&
           !slotsSent
         ) {
-          console.log("sending availibility...", bookableSlots);
-          //TODO
-          // if (e.origin !== 'http://the-trusted-iframe-origin.com') return;
           iframe.contentWindow.postMessage(
             {
               slotAvailability: bookableSlots,
@@ -165,10 +171,9 @@ const previousTask =
 
   // Get the slots that are available for the selected date
   function getSlots(dateSelected, resourceID) {
-    //TODO
-    // if (e.origin !== 'http://the-trusted-iframe-origin.com') return;
+
     iframe.contentWindow.postMessage({ isLoading: true }, "*");
-    const postData = {  
+    const postData = {
       formValues: {
         Section1: {
           dateSelected: {
@@ -194,11 +199,7 @@ const previousTask =
         let slots = JSON.parse(
           response.integration.transformed.rows_data[0].response,
         );
-
-        // TODO - else statement
         if (slots.slotData.length > 0) {
-          //TODO
-          // if (e.origin !== 'http://the-trusted-iframe-origin.com') return;
           iframe.contentWindow.postMessage({ slots: slots }, "*");
           iframe.contentWindow.postMessage({ isLoading: false }, "*");
         }
@@ -232,7 +233,7 @@ const previousTask =
       method: "POST",
     })
       .then((response) => {
-        
+
         let userBookings = null;
 
         if (response.integration.transformed.rows_data[0].userBookings !== "") {
@@ -244,11 +245,8 @@ const previousTask =
             console.error("Error parsing userBookings:", error);
           }
         }
-        
-        // TODO - else statement
+
         if (userBookings?.length > 0) {
-          //TODO
-          // if (e.origin !== 'http://the-trusted-iframe-origin.com') return;
           iframe.contentWindow.postMessage({
             showAlert: true,
             bookingRef: userBookings
@@ -287,14 +285,14 @@ const previousTask =
       typeof event.data.requestChange !== "undefined" &&
       event.data.requestChange === true
     ) {
-    
+
       // We need to change the appointment remove the saved booking
       const postData = {
         formValues: {
           Section1: {
             slotSelectedStartTime: {
               type: "text",
-              value:  event.data.removeSlot.startTime,
+              value: event.data.removeSlot.startTime,
             },
             slotSelectedEndTime: {
               type: "text",
@@ -315,7 +313,7 @@ const previousTask =
           },
         },
       };
-    
+
       makeRequest({
         url:
           "/apibroker/runLookup?id=6674437b23288&repeat_against=&noRetry=true&getOnlyTokens=undefined&log_id=&app_name=AchieveForms&sid=" +
@@ -341,7 +339,7 @@ const previousTask =
     ) {
       // Set the slot selected
       event.data.slotSelected !== ""
-        ? $("#slotSelectedStartTime").val(event.data.slotSelected.startTime ).trigger("input")
+        ? $("#slotSelectedStartTime").val(event.data.slotSelected.startTime).trigger("input")
         : $("#slotSelectedStartTime").val("").trigger("input");
       event.data.slotSelected !== ""
         ? $("#slotSelectedEndTime").val(event.data.slotSelected.endTime).trigger("input")
@@ -351,10 +349,10 @@ const previousTask =
         : document.querySelector("#concurrentSlots").value = "";
 
       const slotSelectedStartTime = document.querySelector("#slotSelectedStartTime").value,
-      slotSelectedEndTime = document.querySelector("#slotSelectedEndTime").value,
-      concurrentSlots = document.querySelector("#concurrentSlots").value;
+        slotSelectedEndTime = document.querySelector("#slotSelectedEndTime").value,
+        concurrentSlots = document.querySelector("#concurrentSlots").value;
 
-      if(slotSelectedStartTime && slotSelectedEndTime !== "") {
+      if (slotSelectedStartTime && slotSelectedEndTime !== "") {
         // Reserve appointment for 10 minutes
         const postData = {
           formValues: {
@@ -395,20 +393,18 @@ const previousTask =
           method: "POST",
         })
           .then((response) => {
-            if(response.status === "done")  {
+            if (response.status === "done") {
               // Send the response once done
               console.log(response);
               let saveResponse = JSON.parse(
                 response.integration.transformed.rows_data[0].result,
               );
               let queryResult = response.integration.transformed.rows_data[0].QueryResult;
-              //TODO
-              // if (e.origin !== 'http://the-trusted-iframe-origin.com') return;
               iframe.contentWindow.postMessage({
                 saveResponse: saveResponse,
                 queryResult: queryResult,
-                }, "*");
-                alert("We have reserved your booking for 10 minutes. Submit this form to confirm your booking.");
+              }, "*");
+              alert("We have reserved your booking for 10 minutes. Submit this form to confirm your booking.");
             }
           })
           .catch((error) => {
@@ -424,9 +420,6 @@ const previousTask =
       changeSelectedSlot === false &&
       confirmationLoaded === false
     ) {
-      let iframe =document.getElementsByTagName('iframe')[0];
-      //TODO
-      // if (e.origin !== 'http://the-trusted-iframe-origin.com') return;
       iframe.contentWindow.postMessage(
         {
           loadConfirmation: true,
@@ -443,3 +436,4 @@ const previousTask =
       changeSelectedSlot = true;
     }
   });
+}
