@@ -424,6 +424,7 @@ const previousTask =
       changeSelectedSlot === false &&
       confirmationLoaded === false
     ) {
+      let iframe =document.getElementsByTagName('iframe')[0];
       //TODO
       // if (e.origin !== 'http://the-trusted-iframe-origin.com') return;
       iframe.contentWindow.postMessage(
