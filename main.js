@@ -98,8 +98,6 @@ if (isValidOrigin()) {
   resourceIDInput.addEventListener("change", function () {
     resourceID = resourceIDInput.value;
     setTimeout(() => {
-      console.log("detected resource id change");
-      console.log("Delayed for 5 second.");
       iframe = document.querySelector("#iframe");
       getAvailability(bookableStartDate, bookableEndDate, resourceID);
     }, 5000);
@@ -137,7 +135,6 @@ if (isValidOrigin()) {
       method: "POST",
     })
       .then((response) => {
-        console.log("Response", response.integration.transformed.rows_data[0]);
         bookableSlots = JSON.parse(
           response.integration.transformed.rows_data[0]?.response,
         );
@@ -395,7 +392,6 @@ if (isValidOrigin()) {
           .then((response) => {
             if (response.status === "done") {
               // Send the response once done
-              console.log(response);
               let saveResponse = JSON.parse(
                 response.integration.transformed.rows_data[0].result,
               );
@@ -420,6 +416,7 @@ if (isValidOrigin()) {
       changeSelectedSlot === false &&
       confirmationLoaded === false
     ) {
+      let iframe = document.getElementsByTagName('iframe')[0];
       iframe.contentWindow.postMessage(
         {
           loadConfirmation: true,
