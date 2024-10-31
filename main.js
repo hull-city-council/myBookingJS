@@ -416,7 +416,8 @@ if (isValidOrigin()) {
       changeSelectedSlot === false &&
       confirmationLoaded === false
     ) {
-      let iframe = document.getElementsByTagName('iframe')[0];
+    setTimeout(() => {
+      iframe = document.querySelector("#iframe");
       iframe.contentWindow.postMessage(
         {
           loadConfirmation: true,
@@ -428,6 +429,7 @@ if (isValidOrigin()) {
       );
       confirmationLoaded = true;
       iFrameResize({}, iframe);
+    }, 5000);
     }
     if (event.data.changeSlot) {
       changeSelectedSlot = true;
