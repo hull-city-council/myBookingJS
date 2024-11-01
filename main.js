@@ -433,6 +433,7 @@ if (isValidOrigin()) {
     }
     if (event.data.changeSlot) {
       changeSelectedSlot = true;
+      $("#calcHasChanged").val("true").trigger("input");
     }
   });
 }
