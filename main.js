@@ -324,6 +324,7 @@ if (isValidOrigin()) {
           $("#slotSelectedEndTime").val("").trigger("input");
           document.querySelector("#concurrentSlots").value = "";
           document.querySelector("#dateSelected").value = "";
+          $("#calcHasChanged").val("true").trigger("input");
           getAvailability(bookableStartDate, bookableEndDate, resourceID);
         })
         .catch((error) => {
@@ -433,7 +434,6 @@ if (isValidOrigin()) {
     }
     if (event.data.changeSlot) {
       changeSelectedSlot = true;
-      $("#calcHasChanged").val("true").trigger("input");
     }
   });
 }
