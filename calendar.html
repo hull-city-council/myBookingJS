@@ -15,40 +15,58 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@schedule-x/calendar@2.2.0/dist/core.umd.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@schedule-x/drag-and-drop@2.2.0/dist/core.umd.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/@schedule-x/event-modal/dist/core.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@schedule-x/theme-default@2.2.0/dist/index.css">
+  <style>
+    * {
+      font-family: "Noto Sans", sans-serif;
+    }
+  </style>
 </head>
 
 <body>
   <div class="calendar"></div>
 
   <script type="module">
-    let eventer = window[eventMethod];
-    let events = [];
-    const { createCalendar, viewWeek } = window.SXCalendar;
+    const { createCalendar, viewDay, viewMonthAgenda, viewMonthGrid, viewWeek } = window.SXCalendar;
     const { createDragAndDropPlugin } = window.SXDragAndDrop;
+    const { createEventModalPlugin } = window.SXEventModal;
+    const eventModal = createEventModalPlugin();
 
     const plugins = [
       createDragAndDropPlugin(),
     ]
 
-
+    let eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    let eventer = window[eventMethod];
+    let messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
 
     eventer(messageEvent, function (event) {
+
       if (
         typeof event.data.events !== "undefined" &&
         event.data.events !== null
       ) {
-        events = event.data.events;
+        let events = JSON.parse(event.data.events);
+        events = events.map(item => ({
+          id: Number(item.id),
+          title: item.title,
+          start: item.start,
+          end: item.end
+        }));
+        const calendar = createCalendar({
+          views: [viewMonthGrid, viewMonthAgenda, viewWeek, viewDay],
+          events: events,
+          plugins: [eventModal],
+        })
+
+        calendar.render(document.querySelector('.calendar'))
       }
     });
-
-    const calendar = createCalendar({
-      views: [viewWeek],
-      events: events
-    }, plugins)
-
-    calendar.render(document.querySelector('.calendar'))
   </script>
 </body>
 
