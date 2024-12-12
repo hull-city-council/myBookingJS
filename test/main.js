@@ -71,11 +71,11 @@ const caseRef =
     : 0;
 // Check if there is a previous stage
 const previousTask =
-  typeof parent.window.AF._iframe?.forms["fillform-frame-1"].data.task_data
-    ?.previous_task_id !== "undefined"
-    ? parent.window.AF._iframe.forms["fillform-frame-1"].data.task_data
-      .previous_task_id
-    : null;
+  typeof parent.window.AF._iframe?.forms["fillform-frame-1"]?.data?.task_data?.previous_task_id !== "undefined"
+    ? parent.window.AF._iframe.forms["fillform-frame-1"].data.task_data.previous_task_id
+    : (typeof parent.window.AF._iframe?.forms["form_one"].data?.task_data?.previous_task_id !== "undefined"
+        ? parent.window.AF._iframe.forms["form_one"].data.task_data.previous_task_id
+        : null);
 
 function isValidOrigin() {
   const allowedHosts = [
